@@ -1,0 +1,29 @@
+
+h(a, 4).
+h(b, 3).
+h(c, 2).
+h(d, 5).
+h(e, 4).
+
+edge(a, b, 1).
+edge(a, c, 2).
+edge(b, d, 3).
+edge(c, e, 2).
+edge(d, e, 1).
+
+best_first_search(Start, Goal, Path) :-
+    best_first_search_helper([[(0, Start)]], Goal, Path).
+
+best_first_search_helper([[(_, Goal)|Visited]|_], Goal, Path) :-
+    reverse([Goal|Visited], Path).
+best_first_search_helper([Path|Paths], Goal, FinalPath) :-
+    extend(Path, NewPaths),
+    append(Paths, NewPaths, Paths1),
+    sort(Paths1, SortedPaths),
+    best_first_search_helper(SortedPaths, Goal, FinalPath).
+
+extend([(Cost, Node)|Path], NewPaths) :-
+    findall([(Cost1, Node1),(Cost1, Node1)|Path],
+            (edge(Node, Node1, Cost1),
+             \+ member((_, Node1), Path)),
+            NewPaths).

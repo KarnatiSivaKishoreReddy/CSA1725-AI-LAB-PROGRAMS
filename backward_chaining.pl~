@@ -1,0 +1,40 @@
+% Define facts about people's preferences for fruits
+likes(john, apples).
+likes(mary, oranges).
+likes(jane, bananas).
+likes(joe, apples).
+likes(joe, oranges).
+
+% Define rules for backward chaining
+likes(X, Fruit) :- likes(X, Fruit), \+ Fruit = apple_or_orange, \+ Fruit = apple_and_orange.
+likes(X, apple_or_orange) :- likes(X, apples).
+likes(X, apple_or_orange) :- likes(X, oranges).
+likes(X, apple_and_orange) :- likes(X, apples), likes(X, oranges).
+likes(X, apple) :- likes(X, apples), \+ likes(X, oranges).
+likes(X, orange) :- likes(X, oranges), \+ likes(X, apples).
+likes(X, banana) :- likes(X, bananas).
+
+% Query to determine if a person likes a specific fruit
+query_likes(Person, Fruit) :-
+    likes(Person, Fruit),
+    write(Person), write(' likes '), write(Fruit), write('.'),
+    nl.
+
+query_likes(Person, Fruit) :-
+    likes(Person, Category),
+    (   Category = apple_or_orange,
+        query_likes(Person, apples),
+        query_likes(Person, oranges)
+    ;   Category = apple_and_orange,
+        query_likes(Person, apples),
+        query_likes(Person, oranges)
+    ;   Fruit = Category,
+        write(Person), write(' likes '), write(Fruit), write('.'),
+        nl
+    ).
+
+% Example queries
+example_queries :-
+    query_likes(john, apples),
+    query_likes(mary, oranges),
+    query_likes(joe, bananas).
